@@ -14,9 +14,14 @@ const MAX_CHARS = 200;
 
 function main(): void {
   const line = ENTRY.trim();
-  if (line.length === 0 || line.length > MAX_CHARS) {
+  // Count characters as Unicode code points, matching how the scorer
+  // counts UTF-8 characters; String.length counts UTF-16 code units
+  // instead, so a line with a multi-byte character would be measured
+  // one short per character outside the Basic Multilingual Plane.
+  const charCount = [...line].length;
+  if (charCount === 0 || charCount > MAX_CHARS) {
     throw new Error(
-      `entry must be 1-${MAX_CHARS} characters, got ${line.length}`,
+      `entry must be 1-${MAX_CHARS} characters, got ${charCount}`,
     );
   }
   if (line.includes("\n") || line.includes("\r")) {
